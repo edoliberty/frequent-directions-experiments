@@ -1,6 +1,7 @@
 import sys,numpy
         
 class DataHandler:
+
     def __init__(self):
         self.wasInitForMake = False
         
