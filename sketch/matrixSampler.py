@@ -3,19 +3,17 @@ import sys
 from random import random
 from matrixSketcherBase import MatrixSketcherBase
 
-class MatrixSampler (MatrixSketcherBase):
+class MatrixSampler(MatrixSketcherBase):
     def __init__(self, d, ell):
-    MatrixSketcherBase.__init__(self, d, ell)
+        MatrixSketcherBase.__init__(self, d, ell)
         self.class_name = 'MatrixSampler' 
         self.samplers = [singleItemSampler() for i in xrange(self.ell)]
-        
-                    
+                       
     def append(self,vector):
         row_norm_square = numpy.sum(vector ** 2)
         for i in xrange(self.ell):
             self.samplers[i].add(vector , row_norm_square)
-         
-           
+   
     def get(self):
         for (i,sampler) in enumerate(self.samplers):
             p = sampler.item_probability
@@ -25,7 +23,6 @@ class MatrixSampler (MatrixSketcherBase):
         
         return self._sketch
 
-
 class singleItemSampler():
     def __init__(self):
         self.item = None
@@ -34,7 +31,6 @@ class singleItemSampler():
         self.sum_w = 0.0
         self.machine_precision = 1e-10
         
-
     def add(self, item, w = 1):
         w = float(w)
         if w <= 0.0:
@@ -50,8 +46,3 @@ class singleItemSampler():
             
     def get(self):
         return (self.item ,self.item_weight, item_probability)
-        
-
-
-
-
