@@ -1,7 +1,7 @@
 from numpy import zeros
 
 class MatrixSketcherBase:
-
+    
     def __init__(self, d, ell):
         self.d = d
         self.ell = ell

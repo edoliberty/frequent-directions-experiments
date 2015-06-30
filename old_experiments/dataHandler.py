@@ -1,6 +1,7 @@
-import sys,numpy
+import sys
+import numpy
         
-class DataHandler:
+class SyntheticDataMaker.py:
 
     def __init__(self):
         self.wasInitForMake = False

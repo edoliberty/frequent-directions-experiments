@@ -3,10 +3,10 @@ import sys
 from random import random
 from matrixSketcherBase import MatrixSketcherBase
 
-class MatrixSampler(MatrixSketcherBase):
+class RowSampler(MatrixSketcherBase):
     def __init__(self, d, ell):
         MatrixSketcherBase.__init__(self, d, ell)
-        self.class_name = 'MatrixSampler' 
+        self.class_name = 'RowSampler' 
         self.samplers = [singleItemSampler() for i in xrange(self.ell)]
                        
     def append(self,vector):

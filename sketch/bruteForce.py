@@ -7,7 +7,7 @@ class BruteForce(MatrixSketcherBase):
     def __init__(self, d, ell):
         self.d = d
         self.ell = ell
-        self.class_name = 'MatrixMultiplier'
+        self.class_name = 'BrutForce'
         self.covariance = zeros( (self.d,self.d) )    
                     
     def append(self,vector):

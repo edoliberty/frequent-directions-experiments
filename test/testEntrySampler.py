@@ -1,8 +1,7 @@
+import sys
 import unittest
-from dataHandler import DataHandler
-
-from sys import path as syspath
-syspath.append('../sketch')
+sys.path.append('../sketch')
+from utils.dataHandler import DataHandler
 from entrySampler import EntrySampler as Sketcher
 
 class testMatrixEntrySampler(unittest.TestCase):
