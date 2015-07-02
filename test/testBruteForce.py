@@ -1,8 +1,7 @@
 import sys
 import unittest
-sys.path.append('../sketch')
-from utils.dataHandler import DataHandler
-from bruteForce import BruteForce as Sketcher
+from ..sketch.utils.syntheticDataMaker import SyntheticDataMaker
+from ..sketch.bruteForce import BruteForce as Sketcher
 
 class testMatrixRandomSums(unittest.TestCase):
 
@@ -10,14 +9,14 @@ class testMatrixRandomSums(unittest.TestCase):
     n = 100
     d = 20
     ell = 5
-    data_handler = DataHandler()
-    data_handler.initBeforeMake(d,signal_dimension=10,signal_to_noise_ratio=5,\
+    syntheticDataMaker = SyntheticDataMaker()
+    syntheticDataMaker.initBeforeMake(d,signal_dimension=10,signal_to_noise_ratio=5,\
                                     signal_singular_value_decay_factor=1,signal_singular_value_decay_type='lin')
     
     sketcher = Sketcher(d,ell)
 
     for i in xrange(n):
-        v = data_handler.makeRow()
+        v = syntheticDataMaker.makeRow()
         sketcher.append(v)
     sketch = sketcher.get()
     self.assertEqual(sketch.shape,(ell,d))
