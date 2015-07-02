@@ -12,16 +12,17 @@ class RowSampler(MatrixSketcherBase):
     def append(self,vector):
         row_norm_square = numpy.sum(vector ** 2)
         for i in xrange(self.ell):
-            self.samplers[i].add(vector , row_norm_square)
+            self.samplers[i].add(vector, row_norm_square)
    
     def get(self):
         for (i,sampler) in enumerate(self.samplers):
             p = sampler.item_probability
             row = sampler.item
-            if not row is None:
+            if row is not None:
                 self._sketch[i,:] = row / (numpy.sqrt(p * float(self.ell)))
         
         return self._sketch
+
 
 class singleItemSampler():
     def __init__(self):
@@ -45,4 +46,4 @@ class singleItemSampler():
             self.item_probability = self.item_probability * (1.0 - p)
             
     def get(self):
-        return (self.item ,self.item_weight, item_probability)
+        return (self.item ,self.item_weight, self.item_probability)

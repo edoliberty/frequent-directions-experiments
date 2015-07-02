@@ -16,7 +16,7 @@ class FrequentDirections(MatrixSketcherBase):
     	if self.nextZeroRow >= self.m:
             self.__rotate__()
         self._sketch[self.nextZeroRow,:] = vector 
-        self.nextZeroRow+=1
+        self.nextZeroRow += 1
         
     def __rotate__(self):
         [_,s,Vt] = svd(self._sketch , full_matrices=False)
