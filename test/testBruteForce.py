@@ -1,9 +1,8 @@
-import sys
 import unittest
 from ..sketch.utils.syntheticDataMaker import SyntheticDataMaker
 from ..sketch.bruteForce import BruteForce as Sketcher
 
-class testMatrixRandomSums(unittest.TestCase):
+class testBruteForce(unittest.TestCase):
 
   def test_running(self):
     n = 100

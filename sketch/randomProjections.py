@@ -1,4 +1,3 @@
-import sys
 from numpy import outer, sqrt
 from numpy.random import choice
 from matrixSketcherBase import MatrixSketcherBase

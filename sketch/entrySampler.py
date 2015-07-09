@@ -1,5 +1,3 @@
-import sys
-
 from scipy.sparse import dok_matrix
 from scipy import dot, diag, sqrt, float32
 from scipy.sparse.linalg import svds
@@ -17,7 +15,7 @@ class EntrySampler:
                     
     def append(self,v):
         for (col,val) in enumerate(v):
-            self.sampler.add((self.rows,col,val),abs(val))
+            self.sampler.add((self.rows, col, val), abs(val))
         self.rows += 1
 
     def get(self):

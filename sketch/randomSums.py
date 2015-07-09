@@ -1,4 +1,3 @@
-#import numpy
 from numpy.random import randint, choice
 from matrixSketcherBase import MatrixSketcherBase
 

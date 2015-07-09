@@ -1,5 +1,4 @@
 import numpy
-import sys
 from random import random
 from matrixSketcherBase import MatrixSketcherBase
 

@@ -1,6 +1,5 @@
 from numpy import zeros, dot, outer, diag, sqrt
 from numpy.linalg import svd
-import sys
 from matrixSketcherBase import MatrixSketcherBase
 
 class BruteForce(MatrixSketcherBase):
@@ -14,9 +13,8 @@ class BruteForce(MatrixSketcherBase):
         self.covariance += outer(vector,vector)
                 
     def get(self):
-	return self.covariance
-        #(U,s,Vt) = svd(self.covariance)
-        #return dot(diag(sqrt(s[:self.ell])), Vt[:self.ell,:])
+        (U,s,Vt) = svd(self.covariance)
+        return dot(diag(sqrt(s[:self.ell])), Vt[:self.ell,:])
 
 
              
