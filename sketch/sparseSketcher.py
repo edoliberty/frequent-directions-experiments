@@ -41,7 +41,10 @@ class SparseSketcher(MatrixSketcherBase):
     def __rotate__(self):
         # First rotate the the buffer
         [_,s,Vt] = sparsesvd(compressed_matrix(self.buffer), self.ell)
-        self._sketch[self.sketch_nextZeroRow : self.sketch_nextZeroRow + len(s),:] = dot(diag(s), Vt[:rank,:])
+        sShrunk = sqrt(s[:self.ell]**2 - s[self.ell]**2)
+        
+        # insert the shrunk part into the sketch
+        self._sketch[self.ell:,:] = dot(diag(s), Vt[:self.ell,:])
         
         # resetting the buffer matrix
         del self.buffer
@@ -54,13 +57,10 @@ class SparseSketcher(MatrixSketcherBase):
         sShrunk = sqrt(s[:self.ell]**2 - s[self.ell]**2)
         self._sketch[:self.ell,:] = dot(diag(sShrunk), Vt[:self.ell,:])
         self._sketch[self.ell:,:] = 0
-        self.sketch_nextZeroRow = self.ell
-
 
     def get(self):
         return self._sketch[:self.ell,:]
-    
-##########################################33 
+     
 if __name__ == '__main__':
 
     print '---------------------------------------------'
