@@ -1,8 +1,8 @@
 import unittest
 from ..sketch.utils.syntheticDataMaker import SyntheticDataMaker
-from ..sketch.randomSums import RandomSums as Sketcher
+from ..sketch.rowSampler import RowSampler as Sketcher
 
-class testRandomSums(unittest.TestCase):
+class testRowSampler(unittest.TestCase):
 
   def test_running(self):
     n = 100
@@ -17,9 +17,8 @@ class testRandomSums(unittest.TestCase):
     for i in xrange(n):
         v = syntheticDataMaker.makeRow()
         sketcher.append(v)
-    
-    sketch = sketcher.get()
-    
+
+    sketch = sketcher.get()    
     self.assertEqual(sketch.shape,(ell,d))
 
 

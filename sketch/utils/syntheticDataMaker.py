@@ -46,6 +46,12 @@ class SyntheticDataMaker:
         signal = numpy.dot(self.signal_singular_values * signal_coeffs, self.signal_row_space)
         return signal + noise/self.signal_to_noise_ratio
 
+    def makeMatrix(self, n):
+        matrix = numpy.zeros((n, self.dimension))
+        for i in xrange(n):
+            matrix[i,:] = self.makeRow()
+        return matrix
+            
     def getSignalRowSpace(self):
         return self.signal_row_space
 
