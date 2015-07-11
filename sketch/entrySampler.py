@@ -5,7 +5,7 @@ from scipy.sparse.linalg import svds
 from utils.reservoirSampler import ReservoirSampler
 
 class EntrySampler:
-    def __init__(self,d,ell):
+    def __init__(self, d, ell):
         self.class_name = 'EntrySampler'
         self.d = d
         self.ell = ell

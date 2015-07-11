@@ -12,9 +12,8 @@ class SparseSketcher(MatrixSketcherBase):
     def __init__(self, d, ell):
         self.class_name = 'SparseSketcher'
         self.d = d
-        self.ell = ell #it is used to subtract off ell-th sv
-        self.m = 2*self.ell
-        self._sketch = zeros( (self.m, self.d) )
+        self.ell = ell
+        self._sketch = zeros( (2*self.ell, self.d) )
         self.sketch_nextZeroRow = 0 
 
         self.buffer_ell = self.d
@@ -36,8 +35,6 @@ class SparseSketcher(MatrixSketcherBase):
         self.buffer_nnz += vector.nnz
         self.buffer_nextZeroRow +=1
         
-            
-
     def __rotate__(self):
         # First rotate the the buffer
         [_,s,Vt] = sparsesvd(compressed_matrix(self.buffer), self.ell)

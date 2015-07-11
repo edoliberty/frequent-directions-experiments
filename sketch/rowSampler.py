@@ -19,9 +19,7 @@ class RowSampler(MatrixSketcherBase):
             row = sampler.item
             if row is not None:
                 self._sketch[i,:] = row / (numpy.sqrt(p * float(self.ell)))
-        
         return self._sketch
-
 
 class singleItemSampler():
     def __init__(self):
