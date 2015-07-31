@@ -11,4 +11,5 @@ class RandomSums(MatrixSketcherBase):
     def append(self,vector):
         row = randint(self.ell)
         sign = choice(self.signs)
-        self._sketch[row,:] += sign*vector
+        v = (sign * vector).tolist()
+        self._sketch[row,:] += v[0]
