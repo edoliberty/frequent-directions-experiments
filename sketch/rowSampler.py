@@ -1,5 +1,6 @@
 import numpy
 from random import random
+from numpy.linalg import norm
 from matrixSketcherBase import MatrixSketcherBase
 
 class RowSampler(MatrixSketcherBase):
@@ -9,7 +10,7 @@ class RowSampler(MatrixSketcherBase):
         self.samplers = [singleItemSampler() for i in xrange(self.ell)]
                        
     def append(self,vector):
-        row_norm_square = numpy.sum(vector ** 2)
+        row_norm_square = norm(vector) ** 2
         for i in xrange(self.ell):
             self.samplers[i].add(vector, row_norm_square)
    
