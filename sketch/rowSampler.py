@@ -1,6 +1,6 @@
 import numpy
-from random import random
 from numpy.linalg import norm
+from random import random
 from matrixSketcherBase import MatrixSketcherBase
 
 class RowSampler(MatrixSketcherBase):
