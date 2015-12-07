@@ -38,7 +38,7 @@ int main()
   clock_t start, end;
   double cpu_time_used;
   start = clock();
-  int rounds = 30;
+  int rounds = 50;
   for (int round = 0; round < rounds; round++){
     int t1=0,t2;
     for (int row=0; row<m; row++){ // for every row in A                                                                                                                                                                                                                                                                                                                     
@@ -75,6 +75,6 @@ int main()
   end = clock();
   cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
-  printf("Done in %f seconds per multiplication.\n",cpu_time_used/(double)rounds);
+  printf("Done in %f seconds\n",cpu_time_used);
 }
 
