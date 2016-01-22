@@ -9,7 +9,7 @@ typedef struct{
 
 } SparseVector;
 
-void init(SparseVector* sv, int nnz, int dim, int cols[], double vals[]);
+void init(SparseVector* sv, int dim, int cols[], double vals[]);
 
 void random_init(SparseVector* sv, int dim);
 
