@@ -1,84 +1,107 @@
 #include "sparseSketcher.h"
 
-void init_sketcher(SparseSketcher* ss, int ell, int dim ){
-  ss->class_name = "sparseSketcher";
-  ss->dimension = dim;
-  ss->ell = ell;
-  ss->sketch = (double*) malloc(sizeof(double) * 2 * ell * dim);
-  init_matrix(&(ss->buffer), dim );
-  ss->nnz_threshold = ell * dim;
-  memset(ss->sketch, 0, sizeof(double)*2*ell*dim);
+void init_sparseSketcher(SparseSketcher* self, int ell, int dim ){
+  self->class_name = "sparseSketcher";
+  self->dimension = dim;
+  self->ell = ell;
+  self->m = 2*ell;
+  self->sketch = (double*) malloc(sizeof(double) * (self->m) * dim);
+  memset(self->sketch, 0, sizeof(double) * (self->m) * dim);
+  init_sparseMatrix(&(self->buffer), dim, (ell+1)*dim );
+  self->nnz_threshold = ell * dim;
+}  
+
+
+void append_to_sparseSketcher(SparseSketcher* self, SparseVector* sv){
+  if((self->buffer).current_nnz >= self->nnz_threshold || (self->buffer).nextRow >= self->dimension)
+    rotate_sparseSketcher(self);
+  append_to_sparseMatrix(&(self->buffer), sv);
 }
 
-void rotate(SparseSketcher *ss){
-  sparseShrink(ss);
-  denseShrink(ss);
+void rotate_sparseSketcher(SparseSketcher *self){
+  /*
+  (self->buffer).current_nnz = 0;
+  (self->buffer).nextRow = 0;
+  (self->buffer).pointer = 0;    
+  */
+  sparseShrink(self);
+  denseShrink(self);
 }
 
-void get_sketch(SparseSketcher *ss){
-  rotate(ss);
+void get_sparseSketch(SparseSketcher *self){
+  rotate_sparseSketcher(self);
 }
 
+void sparseShrink(SparseSketcher *self){
+  if((self->buffer).nextRow > self->ell){
+    //printf("IF \n");
+    double* temp_vec = (double*) malloc(sizeof(double) * self->ell);
+    double* temp_mat = (double*) malloc(sizeof(double) * self->ell * self->dimension);
+    double* G = (double*) malloc(self->ell * self->dimension * sizeof(double));
+    double* Z = (double*) malloc(self->ell * (self->buffer).nextRow * sizeof(double));
+    int i,j;
 
-void append_row(SparseSketcher* ss, SparseVector* sv){
-  if((ss->buffer).current_nnz >= ss->nnz_threshold || (ss->buffer).nextRow >= ss->dimension)
-    rotate(ss);
-  append(&(ss->buffer), sv);
-}
+    for(i=0; i < self->ell * self->dimension; i++)
+      G[i] = ( (float)rand() / (float)(RAND_MAX) );
 
-void sparseShrink(SparseSketcher *ss){
+    blockPowerMethod(&(self->buffer), self->ell, 1, G, Z, temp_vec, temp_mat);
+    free(temp_vec); 
+    free(G);
 
-  double* temp_vec = (double*) malloc(sizeof(double) * ss->ell);
-  double* temp_mat = (double*) malloc(sizeof(double) * ss->ell * ss->dimension);
-  double* G = (double*) malloc(ss->ell * ss->dimension * sizeof(double));
-  double* Z = (double*) malloc(ss->ell * (ss->buffer).nextRow * sizeof(double));
-  int i,j;
+    //computing P = ZtA, temp_mat is P
+    transposeRightMult(&(self->buffer), self->ell, Z, temp_mat);
+    free(Z);
 
-  for(i=0; i < ss->ell * ss->dimension; i++)
-    G[i] = ( (float)rand() / (float)(RAND_MAX) );
+    // svd(ZtA)
+    double S[self->ell], U[self->ell * self->ell], Vt[self->dimension * self->ell];
+    int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', self->ell, self->dimension, temp_mat, self->dimension, S, U, self->ell, Vt, self->dimension);
+    free(temp_mat);
 
-  blockPowerMethod(&(ss->buffer), ss->ell, 0.25, G, Z, temp_vec, temp_mat);
-  free(temp_vec); 
-  free(G);
 
-  //temp_mat becomes ZtA
-  transposeRightMult(&(ss->buffer), ss->ell, Z, temp_mat);
-  free(Z);
+    // shrink S and compute S*Vt
+    for(i=0; i < self->ell; i++){
+      S[i] = sqrt( pow(S[i],2) - pow(S[self->ell-1],2) );
+      for(j=0; j < self->dimension; j++)
+	self->sketch[(self->ell + i) * self->dimension + j] = Vt[i * self->dimension + j] * S[i] ;
+    }
+  }else{ // self->buffer has atmost ell rows
+    //printf("has atmost ell rows");
+    int headptr = 0, ptr = 0;
+    int rowIndex = (self->buffer).rows[headptr];
+    int i = 0;
 
-  // svd(ZtA)
-  double S[ss->ell], U[ss->ell * ss->ell], Vt[ss->dimension * ss->ell];
-  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', ss->ell, ss->dimension, temp_mat, ss->dimension, S, U, ss->ell, Vt, ss->dimension);
-  free(temp_mat);
+    while(ptr != (self->buffer).pointer){
+      headptr = ptr;
+      rowIndex = (self->buffer).rows[headptr];
 
-  // shrink S
-  for(i=0; i < ss->ell; i++){
-    S[i] = sqrt( pow(S[i],2) - pow(S[ss->ell-1],2) );
-    //printf("S: %f ,",S[i]);
+      while(ptr != (self->buffer).pointer && (self->buffer).rows[ptr] == rowIndex){
+	self->sketch[(self->ell + i) * self->dimension + (self->buffer).cols[ptr]] = (self->buffer).values[ptr];
+	ptr ++;
+      }
+      i++;
+    }
   }
-  //printf("\n");
-  // compute S*Vt
-  for(i=0; i < ss->ell; i++)
-    for(j=0; j < ss->dimension; j++)
-      ss->sketch[(ss->ell + i) * ss->dimension + j] = Vt[i * ss->dimension + j] * S[i] ;
 
   // reset buffer
-  (ss->buffer).current_nnz = 0;
-  (ss->buffer).nextRow = 0;
-  (ss->buffer).pointer = 0;    
+  (self->buffer).current_nnz = 0;
+  (self->buffer).nextRow = 0;
+  (self->buffer).pointer = 0;    
 }
 
 
-void denseShrink(SparseSketcher* ss){
-  double S[2*ss->ell], U[(2*ss->ell) * (2*ss->ell)], Vt[ss->dimension * (2*ss->ell)];
+void denseShrink(SparseSketcher* self){
+  double S[2*self->ell], U[(2*self->ell) * (2*self->ell)], Vt[self->dimension * (2*self->ell)];
   int i, j, info;
 
-  info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', 2*ss->ell, ss->dimension, ss->sketch, ss->dimension, S, U, 2*ss->ell, Vt, ss->dimension);
-  for(i=0; i < ss->ell; i++)
-    S[i] = sqrt( pow(S[i],2) - pow(S[ss->ell-1],2) );
-  
-  for(i=0; i < ss->ell; i++)
-    for(j=0; j < ss->dimension; j++)
-      ss->sketch[i * ss->dimension + j] = Vt[i * ss->dimension + j] * S[i] ;
+  info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', 2*self->ell, self->dimension, self->sketch, self->dimension, S, U, 2*self->ell, Vt, self->dimension);
 
-  memset(&ss->sketch[ss->ell * ss->dimension], 0, ss->ell * ss->dimension * sizeof(double));
+  //for(i=0; i < self->ell; i++)
+  
+  for(i=0; i < self->ell; i++){
+    S[i] = sqrt( pow(S[i],2) - pow(S[self->ell-1],2) );
+    for(j=0; j < self->dimension; j++)
+      self->sketch[i * self->dimension + j] = Vt[i * self->dimension + j] * S[i] ;
+  }
+
+  memset(&self->sketch[self->ell * self->dimension], 0, self->ell * self->dimension * sizeof(double));
 }

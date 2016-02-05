@@ -1,53 +1,70 @@
 #include "sparseVector.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 
-void init(SparseVector* sv, int dim, int cols[], double vals[]){
-  sv->nnz = sizeof(cols) / sizeof(cols[0]);
-  sv->dimension = dim;
-  sv->cols = (int*) malloc(sizeof(int) * sv->nnz);
-  sv->values = (double*) malloc(sizeof(double) * sv->nnz);
+
+void init_sparseVector(SparseVector* self, int dim, int cols[], double vals[]){
+  self-> nnz = sizeof(cols) / sizeof(cols[0]);
+  self-> dimension = dim;
+  self-> cols = (int*) malloc(sizeof(int) * self-> nnz);
+  self-> values = (double*) malloc(sizeof(double) * self-> nnz);
+  self-> squaredNorm = 0;
   int i;
 
-  for (i=0; i < sv->nnz; i++){
-    //assert(cols[i]>=0);// && cols[i]<dim);
-    sv->cols[i] = cols[i];
-    sv->values[i] = vals[i];
+  for (i=0; i < self-> nnz; i++){
+    self-> cols[i] = cols[i];
+    self-> values[i] = vals[i];
+    self-> squaredNorm += pow(vals[i] , 2);
   }
 }
 
-void random_init(SparseVector* sv, int dim){
+void random_init_sparseVector(SparseVector* self, int dim){
 
-  sv->dimension = dim;  
-  sv->nnz = 10;//rand() % dim;
-  //printf("%d\n",sv->nnz);
-  sv->cols = (int*) malloc(sizeof(int) * sv->nnz);
-  sv->values = (double*) malloc(sizeof(double) * sv->nnz);
-
+  self-> dimension = dim;  
+  self-> nnz = 10;//rand() % dim;
+  //printf("%d ",self->nnz);
+  self-> cols = (int*) malloc(sizeof(int) * self-> nnz);
+  self-> values = (double*) malloc(sizeof(double) * self-> nnz);
+  self-> squaredNorm = 0;
   int i;
-  for (i=0; i < sv->nnz; i++){
+
+  for (i=0; i < self-> nnz; i++){
     double newly_gen = rand() % dim;
     int flag = 1;
     int j= 0;
 
     while (flag == 1){
       for (j=0; j < i; j++)
-	if (newly_gen == sv->cols[j])
+	if (newly_gen == self-> cols[j])
 	  break;
       if (j == i)
 	flag = 0; 
       else
 	newly_gen = rand() % dim;
     }
-    sv->cols[i] = newly_gen;
-    sv->values[i] = (int)ceil( ((double)rand()/(double)(RAND_MAX)) * 10); ;
+    self-> cols[i] = newly_gen;
+    self-> values[i] = (int)ceil( ((double)rand()/(double)(RAND_MAX)) * 10);
+    self-> squaredNorm += pow(self-> values[i] , 2);
   }
 }
 
-void print(SparseVector* sv){
+void print_sparseVector(SparseVector* self){
   int i;
-  for (i=0; i< sv->nnz; i++)
-    printf("(%d, %.2f)", sv->cols[i], sv->values[i]  );
+  printf("nnz=%d",self-> nnz);
+  for (i=0; i< self-> nnz; i++)
+    printf("(%d, %.2f)", self-> cols[i], self-> values[i]  );
   printf("\n");
 }
+
+/*
+void printDense(SparseVector* self){
+  //sort first
+  int i, j=0, k;
+  printf("[");
+  for (i=0; i < self-> nnz; i++){
+    for (k=j; k < self-> cols[i]; k++)
+      printf("0 ");
+    printf("%f ", self-> values[i]);
+    j = self-> cols[i];
+  }
+  printf("]\n");
+}
+*/

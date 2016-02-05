@@ -1,3 +1,6 @@
+#ifndef SPARSESKETCHER_H
+#define SPARSESKETCHER_H
+
 #include "sparseMatrix.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,11 +8,11 @@
 #include <lapacke.h>
 #include <string.h>
 
-
 typedef struct {
   char* class_name;
   int dimension;
   int ell;
+  int m;
   double* sketch;
   SparseMatrix buffer;
   int nnz_threshold;
@@ -17,9 +20,11 @@ typedef struct {
 } SparseSketcher;
 
 
-void init_sketcher(SparseSketcher* ss, int ell, int dim );
-void append_row(SparseSketcher* ss, SparseVector* sv);
-void sparseShrink(SparseSketcher* ss);
-void denseShrink(SparseSketcher* ss);
-void rotate(SparseSketcher* ss);
-void get_sketch(SparseSketcher* ss);
+void init_sparseSketcher(SparseSketcher* self, int ell, int dim );
+void append_to_sparseSketcher(SparseSketcher* self, SparseVector* sv);
+void sparseShrink(SparseSketcher* self);
+void denseShrink(SparseSketcher* self);
+void rotate_sparseSketcher(SparseSketcher* self);
+void get_sparseSketch(SparseSketcher* self);
+
+#endif
