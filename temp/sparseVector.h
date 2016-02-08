@@ -16,8 +16,8 @@ typedef struct{
 } SparseVector;
 
 void init_sparseVector(SparseVector* self, int dim, int cols[], double vals[]);
-void random_init_sparseVector(SparseVector* self, int dim);
+void random_init_sparseVector(SparseVector* self, int dim, int nnz);
 void print_sparseVector(SparseVector* self);
-//void printDense(SparseVector* self);
+
 
 #endif

@@ -42,5 +42,5 @@ all:
 	gcc -c -g -o sparseVector.o sparseVector.c
 	gcc -c -g -o frequentDirections.o frequentDirections.c
 	gcc -c -g -o sparseSketcher.o sparseSketcher.c		
-	gcc -c -g -o usage.o usage.c	
-	gfortran common.o frequentDirections.o rowSampler.o randomSum.o randomProjection.o singleItemSampler.o sparseVector.o sparseMatrix.o sparseSketcher.o usage.o /usr/lib/liblapacke.a /usr/lib/liblapack.a /usr/lib/libblas.a -o usage.exe
+	gcc -c -g -o testAll.o testAll.c	
+	gfortran common.o frequentDirections.o rowSampler.o randomSum.o randomProjection.o singleItemSampler.o sparseVector.o sparseMatrix.o sparseSketcher.o testAll.o /usr/lib/liblapacke.a /usr/lib/liblapack.a /usr/lib/libblas.a -o testAll.exe

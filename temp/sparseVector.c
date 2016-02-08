@@ -16,11 +16,10 @@ void init_sparseVector(SparseVector* self, int dim, int cols[], double vals[]){
   }
 }
 
-void random_init_sparseVector(SparseVector* self, int dim){
+void random_init_sparseVector(SparseVector* self, int dim, int nnz){
 
   self-> dimension = dim;  
-  self-> nnz = 10;//rand() % dim;
-  //printf("%d ",self->nnz);
+  self-> nnz = nnz;
   self-> cols = (int*) malloc(sizeof(int) * self-> nnz);
   self-> values = (double*) malloc(sizeof(double) * self-> nnz);
   self-> squaredNorm = 0;
