@@ -100,7 +100,7 @@ void subtract(double* mat1, double* mat2, double* res){
 // computes spectral norm of mat
 double getSpectralNorm(double* mat, int ell, int d){
   double S[ell], U[1 * 1], Vt[1 * 1];
-  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'N', ell, d, mat, ell, S, U, ell, Vt, d);
+  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'N', ell, d, mat, d, S, U, ell, Vt, d);
   return S[0];
 }
 
@@ -116,3 +116,88 @@ double computeRelCovErr(SparseMatrix* A, double* B, int ell, int d){
   double s = computeCovErr(A,B,ell,d);
   return s / A-> squaredFrob;
 }
+
+
+double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k){
+
+  double* Adense = (double*) malloc(sizeof(double) * A->nextRow * A->dimension);
+  densify_sparseMatrix(A, Adense);
+
+  double* S = (double*) malloc(sizeof(double) * A->nextRow);
+  double* U = (double*) malloc(sizeof(double) * A->nextRow * A->nextRow);
+  double* Vt = (double*) malloc(sizeof(double) * A->dimension * A->dimension);
+  
+  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', A->nextRow, A->dimension, Adense, A->dimension, S, U, A->nextRow, Vt, A->dimension);
+
+  free(U); free(Adense);
+  double tailSquaredFrob = 0;
+  int i;
+
+  for(i = k; i < min(A->nextRow,A->dimension) ; i++)
+    tailSquaredFrob += pow(S[i],2);
+  free(S);
+
+  int headptr = 0, ptr = 0;
+  int rowIndex = A-> rows[headptr];
+  double rowNorm = 0, projNorm = 0, projErr = 0;
+  double* projVec = (double*) malloc(sizeof(double) * k);
+
+  while(ptr != A-> pointer){
+    headptr = ptr;
+    rowIndex = A-> rows[headptr];
+    rowNorm = 0;
+    projNorm = 0;
+    memset(projVec, 0, sizeof(double) * k);
+
+    while(ptr != A-> pointer && A-> rows[ptr] == rowIndex){
+      rowNorm += pow(A->values[ptr],2);
+      for(i=0; i<k; i++){
+	projVec[i] += A->values[ptr] * Vt[i*A->dimension + A->cols[ptr]];
+      }
+      ptr ++;
+    }
+    
+    for(i=0; i<k; i++)
+      projNorm += pow(projVec[i],2);
+    projErr += rowNorm - projNorm;
+  }
+  free(Vt);
+
+  return projErr / tailSquaredFrob;
+}
+
+/*
+void readfile_transpose(char* filename){
+  int n = 7769;
+  int d = 26299;
+  double* data = (double*) malloc(sizeof(double) * n * d);
+  //read file
+  
+
+  //transpose
+  
+
+}
+*/
+/*
+void readfile(){
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen("./dataset/Reuters/1.ssv", "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+
+    while ((read = getline(&line, &len, fp)) != -1) {
+        printf("Retrieved line of length %zu :\n", read);
+        printf("%s", line);
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
+    exit(EXIT_SUCCESS);
+}
+*/
