@@ -1,5 +1,26 @@
 #include "common.h"
 
+/*
+ * QR decomposition of G
+ * Q is returned in G, stored in the row-wise format
+ * R is not returned 
+*/
+void qrDecomp(double* G, lapack_int d, lapack_int ell) {
+  /* if G is a vector */
+  if(d == 1){ 
+    normalizeVector(G, ell);
+    return;
+  }
+
+  int i,j;
+  double *tau  = (double *) malloc( ell * sizeof( double ) );
+  memset(tau, 0, ell * sizeof(double));
+
+  lapack_int x = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, d, ell, G, ell, tau);
+  x = LAPACKE_dorgqr(LAPACK_ROW_MAJOR, d, ell, ell, G, ell, tau);
+  free(tau);  
+}
+
 
 void print_two_dim(char* desc, double* mat, int m, int n) {
   int i, j;
@@ -131,38 +152,30 @@ double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k){
 
   free(U); free(Adense);
   double tailSquaredFrob = 0;
-  int i;
+  int i,j,t;
 
   for(i = k; i < min(A->nextRow,A->dimension) ; i++)
     tailSquaredFrob += pow(S[i],2);
   free(S);
 
-  int headptr = 0, ptr = 0;
-  int rowIndex = A-> rows[headptr];
-  double rowNorm = 0, projNorm = 0, projErr = 0;
+  double projNorm = 0, projErr = 0;
   double* projVec = (double*) malloc(sizeof(double) * k);
+  SparseVector vec;
 
-  while(ptr != A-> pointer){
-    headptr = ptr;
-    rowIndex = A-> rows[headptr];
-    rowNorm = 0;
+  for(t=0; t< A->nextRow; t++){
+    vec = A->vectors[i];
     projNorm = 0;
     memset(projVec, 0, sizeof(double) * k);
-
-    while(ptr != A-> pointer && A-> rows[ptr] == rowIndex){
-      rowNorm += pow(A->values[ptr],2);
-      for(i=0; i<k; i++){
-	projVec[i] += A->values[ptr] * Vt[i*A->dimension + A->cols[ptr]];
+    for(i=0; i<k; i++){
+      for(j=0; j<vec.nnz; j++){
+	projVec[i] += vec.values[j] * Vt[i*A->dimension + vec.cols[j]];
       }
-      ptr ++;
-    }
-    
-    for(i=0; i<k; i++)
       projNorm += pow(projVec[i],2);
-    projErr += rowNorm - projNorm;
+    }
+    projErr += vec.squaredNorm - projNorm;
   }
-  free(Vt);
 
+  free(Vt);
   return projErr / tailSquaredFrob;
 }
 
