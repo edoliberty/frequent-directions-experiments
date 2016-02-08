@@ -10,6 +10,7 @@
 
 
 void test_vs_sparsity(){
+  /*
   int n = 10000;
   int dim = 1000;
   int ell = 100;
@@ -74,9 +75,23 @@ void test_vs_sparsity(){
 
   print_one_dim_double("FD TIME= ", fd_time, exp_no);
   print_one_dim_double("SFD TIME= ", sfd_time, exp_no);
+  */
 }
 
 
 int main(){
-  test_vs_sparsity();
+  int d = 3;
+  int ell = 2;
+  int i;
+
+  double** product = (double**) malloc(sizeof(double*) * d);
+  for(i=0; i< d; i++)
+    product[i] = (double*) malloc(sizeof(double) * ell);
+
+  for(i=0; i< d; i++)
+    memset(product[i], 0 , sizeof(double) * ell);
+
+  //for(j=0; j < d * ell; j++)
+  //  (*product)[j] = 0;
+  //test_vs_sparsity();
 }
