@@ -14,7 +14,7 @@ void init_sparseMatrix (SparseMatrix* self, int dim, int init_len){
 }
 
 void extend_sparseMatrix(SparseMatrix* self){
-  printf("In extend_sparseMatrix \n");
+  printf("in extend\n");
   int* info = realloc( self->rows, 2 * sizeof(int) * (self->arrays_length) );
   if(info != NULL)
     self->rows = info;
@@ -204,13 +204,15 @@ void transposeRightMult (SparseMatrix *self, int ell, double* G, double* product
 void blockPowerMethod(SparseMatrix *self, int ell, double epsilon, double* G, double* lsv, double* temp_vec, double* temp_mat){
   int iterations = (int) ceil(1 * (log(self->dimension / epsilon) / epsilon));
   int i;
+  //printf("numer of iteraiton is %d \n", iterations);
 
   for(i=0; i < iterations; i++){
     if(i % 3 == 0)
       qrDecomp(G, self->dimension, ell);
     covarianceMult(self, self->dimension, ell, &G, temp_vec, &temp_mat); 
   }
-  // approx right singular vectors
+
+  // approx left singular vectors
   leftMult (self, ell, G, lsv);
   qrDecomp(lsv, self->nextRow, ell);
 
@@ -219,6 +221,7 @@ void blockPowerMethod(SparseMatrix *self, int ell, double epsilon, double* G, do
 
 // returns covariance matrix, i.e. AtA
 double* getCovariance_sparseMatrix(SparseMatrix* self){
+  //printf("here\n");
   double* cov = (double*) malloc(sizeof(double) * self->dimension * self-> dimension);
   memset(cov, 0 , self->dimension * self-> dimension * sizeof(double));
 
@@ -228,6 +231,7 @@ double* getCovariance_sparseMatrix(SparseMatrix* self){
   double val;
 
   while(ptr != self-> pointer){
+    //printf("in while\n");
     headptr = ptr;
     rowIndex = self-> rows[headptr];
 
@@ -242,4 +246,23 @@ double* getCovariance_sparseMatrix(SparseMatrix* self){
       }
   }
   return cov;
+}
+
+void densify_sparseMatrix(SparseMatrix* self, double* output){
+  int headptr, ptr = 0;
+  int self_rid;
+  int output_rid = 0;
+
+  memset(output, 0, sizeof(double) * self->nextRow * self->dimension);
+
+  while(ptr != self->pointer){
+    headptr = ptr;
+    self_rid = self->rows[headptr];
+
+    while (ptr != self->pointer && self->rows[ptr] == self_rid){
+      output[output_rid * self->dimension + self->cols[ptr]] = self->values[ptr];
+      ptr ++;
+    }
+    output_rid ++;
+  }
 }

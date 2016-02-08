@@ -36,5 +36,6 @@ double* rightMult (SparseMatrix *self, int ell, double* G);
 void transposeRightMult (SparseMatrix *self, int ell, double* G, double* product);
 void blockPowerMethod(SparseMatrix *self, int ell, double epsilon, double* G, double* lsv, double* temp_vec, double* temp_mat);
 double* getCovariance_sparseMatrix(SparseMatrix *self);
+void densify_sparseMatrix(SparseMatrix* self, double* output);
 
 #endif
