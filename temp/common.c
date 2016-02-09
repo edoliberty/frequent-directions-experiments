@@ -125,59 +125,6 @@ double getSpectralNorm(double* mat, int ell, int d){
   return S[0];
 }
 
-double computeCovErr(SparseMatrix* A, double* B, int ell, int d){
-  double* AtA = getCovariance_sparseMatrix(A);
-  double* BtB = getDenseCovariance(B, ell, d);
-  subtract(AtA, BtB, AtA);
-  double s = getSpectralNorm(AtA, d, d);
-  return s;
-}
-
-double computeRelCovErr(SparseMatrix* A, double* B, int ell, int d){
-  double s = computeCovErr(A,B,ell,d);
-  return s / A-> squaredFrob;
-}
-
-
-double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k){
-
-  double* Adense = (double*) malloc(sizeof(double) * A->nextRow * A->dimension);
-  densify_sparseMatrix(A, Adense);
-
-  double* S = (double*) malloc(sizeof(double) * A->nextRow);
-  double* U = (double*) malloc(sizeof(double) * A->nextRow * A->nextRow);
-  double* Vt = (double*) malloc(sizeof(double) * A->dimension * A->dimension);
-  
-  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', A->nextRow, A->dimension, Adense, A->dimension, S, U, A->nextRow, Vt, A->dimension);
-
-  free(U); free(Adense);
-  double tailSquaredFrob = 0;
-  int i,j,t;
-
-  for(i = k; i < min(A->nextRow,A->dimension) ; i++)
-    tailSquaredFrob += pow(S[i],2);
-  free(S);
-
-  double projNorm = 0, projErr = 0;
-  double* projVec = (double*) malloc(sizeof(double) * k);
-  SparseVector vec;
-
-  for(t=0; t< A->nextRow; t++){
-    vec = A->vectors[i];
-    projNorm = 0;
-    memset(projVec, 0, sizeof(double) * k);
-    for(i=0; i<k; i++){
-      for(j=0; j<vec.nnz; j++){
-	projVec[i] += vec.values[j] * Vt[i*A->dimension + vec.cols[j]];
-      }
-      projNorm += pow(projVec[i],2);
-    }
-    projErr += vec.squaredNorm - projNorm;
-  }
-
-  free(Vt);
-  return projErr / tailSquaredFrob;
-}
 
 /*
 void readfile_transpose(char* filename){

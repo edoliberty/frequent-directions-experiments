@@ -33,9 +33,8 @@ void sparseShrink(SparseSketcher *self){
     double* temp_mat = (double*) malloc(sizeof(double) * self->ell * self->dimension);
     double* G = (double*) malloc(self->ell * self->dimension * sizeof(double));
     double* Z = (double*) malloc(self->ell * (self->buffer).nextRow * sizeof(double));
-    int i,j;
 
-    for(i=0; i < self->ell * self->dimension; i++)
+    for(int i=0; i < self->ell * self->dimension; i++)
       G[i] = ( (float)rand() / (float)(RAND_MAX) );
 
     blockPowerMethod(&(self->buffer), self->ell, 1, G, Z, temp_vec, temp_mat);
@@ -47,27 +46,29 @@ void sparseShrink(SparseSketcher *self){
     free(Z);
 
     // svd(ZtA)
-    double* S = (double*) malloc(sizeof(double) * self->ell);
-    double* U = (double*) malloc(sizeof(double) * self->ell * self->ell);
-    double* Vt = (double*) malloc(sizeof(double) * self->dimension * self->ell);
+    double S[self->ell], U[(self->ell) * (self->ell)], Vt[self->dimension * (self->ell)];
+  
+    //double* S = (double*) malloc(sizeof(double) * self->ell);
+    //double* U = (double*) malloc(sizeof(double) * self->ell * self->ell);
+    //double* Vt = (double*) malloc(sizeof(double) * self->dimension * self->ell);
 
     int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', self->ell, self->dimension, temp_mat, self->dimension, S, U, self->ell, Vt, self->dimension);
     free(temp_mat);
 
 
     // shrink S and compute S*Vt
-    for(i=0; i < self->ell; i++){
+    for(int i=0; i < self->ell; i++){
       S[i] = sqrt( pow(S[i],2) - pow(S[self->ell-1],2) );
-      for(j=0; j < self->dimension; j++)
+      for(int j=0; j < self->dimension; j++)
 	self->sketch[(self->ell + i) * self->dimension + j] = Vt[i * self->dimension + j] * S[i] ;
     }
   }else{ // self->buffer has atmost ell rows
-    int i,j = 0;
     SparseVector temp;
+    int itr = (self->buffer).nextRow;
 
-    for(i=0; i < (self->buffer).nextRow; i++){
+    for(int i=0; i < itr; i++){
       temp = (self->buffer).vectors[i];
-      for(j=0; j < temp.nnz; j++)
+      for(int j=0; j < temp.nnz; j++)
 	self->sketch[(self->ell + i) * self->dimension + temp.cols[j]] = temp.values[j];
     }
   }
@@ -80,22 +81,20 @@ void sparseShrink(SparseSketcher *self){
 
 
 void denseShrink(SparseSketcher* self){
-  //double S[2*self->ell], U[(2*self->ell) * (2*self->ell)], Vt[self->dimension * (2*self->ell)];
-  int i, j, info;
+  double S[2*self->ell], U[(2*self->ell) * (2*self->ell)], Vt[self->dimension * (2*self->ell)];
 
-  double* S = (double*) malloc(sizeof(double) * 2 * self->ell);
-  double* U = (double*) malloc(sizeof(double) * 4 * self->ell * self->ell);
-  double* Vt = (double*) malloc(sizeof(double) * 2 * self->dimension * self->ell);
+  //double* S = (double*) malloc(sizeof(double) * 2 * self->ell);
+  //double* U = (double*) malloc(sizeof(double) * 4 * self->ell * self->ell);
+  //double* Vt = (double*) malloc(sizeof(double) * 2 * self->dimension * self->ell);
 
-  info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', 2*self->ell, self->dimension, self->sketch, self->dimension, S, U, 2*self->ell, Vt, self->dimension);
+  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', 2*self->ell, self->dimension, self->sketch, self->dimension, S, U, 2*self->ell, Vt, self->dimension);
 
-  //for(i=0; i < self->ell; i++)
-  
-  for(i=0; i < self->ell; i++){
+  for(int i=0; i < self->ell; i++){
     S[i] = sqrt( pow(S[i],2) - pow(S[self->ell-1],2) );
-    for(j=0; j < self->dimension; j++)
+    for(int j=0; j < self->dimension; j++)
       self->sketch[i * self->dimension + j] = Vt[i * self->dimension + j] * S[i] ;
   }
 
+  //free(S); free(U); free(Vt);
   memset(&self->sketch[self->ell * self->dimension], 0, self->ell * self->dimension * sizeof(double));
 }

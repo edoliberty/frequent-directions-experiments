@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "sparseVector.h"
+#include "common.h"
 
 typedef struct {
   SparseVector* vectors;
@@ -30,5 +31,8 @@ void transposeRightMult (SparseMatrix *self, int ell, double* G, double* product
 void blockPowerMethod(SparseMatrix *self, int ell, double epsilon, double* G, double* lsv, double* temp_vec, double* temp_mat);
 double* getCovariance_sparseMatrix(SparseMatrix *self);
 void densify_sparseMatrix(SparseMatrix* self, double* output);
+double computeCovErr(SparseMatrix* A, double* B, int ell, int d);
+double computeRelCovErr(SparseMatrix* A, double* B, int ell, int d);
+double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k);
 
 #endif

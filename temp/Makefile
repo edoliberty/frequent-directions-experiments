@@ -8,12 +8,12 @@ main: common.c sparseVector.c sparseMatrix.c sparseSketcher.c usage.c
 
 
 usage: 
-	gcc -c -O3 -o sparseVector.o sparseVector.c
-	gcc -c -O3 -g -o sparseMatrix.o sparseMatrix.c
-	gcc -c -O3 -g -o sparseSketcher.o sparseSketcher.c	
-	gcc -c -O3 -o usage.o usage.c
-	gcc -c -O3 -o common.o common.c
-	gcc -c -O3 -g -o frequentDirections.o frequentDirections.c
+	gcc -c -O3 -std=c99 -o sparseVector.o sparseVector.c
+	gcc -c -O3 -std=c99 -g -o sparseMatrix.o sparseMatrix.c
+	gcc -c -O3 -std=c99 -g -o sparseSketcher.o sparseSketcher.c	
+	gcc -c -O3 -std=c99 -o usage.o usage.c
+	gcc -c -O3 -std=c99 -o common.o common.c
+	gcc -c -O3 -std=c99 -g -o frequentDirections.o frequentDirections.c
 	gfortran common.o frequentDirections.o sparseVector.o sparseMatrix.o sparseSketcher.o usage.o /usr/lib/liblapacke.a /usr/lib/liblapack.a /usr/lib/libblas.a -o usage.exe
 
 
