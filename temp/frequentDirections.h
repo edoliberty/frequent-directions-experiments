@@ -8,6 +8,7 @@
 #include <string.h>
 #include "sparseVector.h"
 #include <lapacke.h>
+#include "common.h"
 
 typedef struct {
   char* class_name;

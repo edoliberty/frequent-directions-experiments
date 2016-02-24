@@ -2,6 +2,7 @@
 
 
 void init_sparseMatrix (SparseMatrix* self, int dim, int len){
+
   self->current_nnz = 0;
   self->dimension = dim;
   self->nextRow = 0;
@@ -11,6 +12,7 @@ void init_sparseMatrix (SparseMatrix* self, int dim, int len){
 
 
 void append_to_sparseMatrix (SparseMatrix* self, SparseVector* sv){
+
   self->vectors[self->nextRow] = *sv;
   self->nextRow ++;
   self->squaredFrob += sv->squaredNorm;
@@ -19,8 +21,7 @@ void append_to_sparseMatrix (SparseMatrix* self, SparseVector* sv){
 
 
 void print_sparseMatrix(SparseMatrix* self){
-  int itr = self->nextRow;
-  for(int i=0; i < itr; i++)
+  for(int i=0; i < self->nextRow; i++)
     print_sparseVector(&(self->vectors[i]));
   
 }
@@ -33,38 +34,27 @@ void print_sparseMatrix(SparseMatrix* self){
  * product is d*ell working memory
 */
 void covMultiply_sparseMatrix (SparseMatrix* self, int d, int ell, double** G, double* temp, double** product){
-  SparseVector vec;
-  int dell = d*ell;
-  double val;
-  double* g = (double*) malloc(sizeof(double) * ell);
-  int rid;
 
-  for(int j=0; j < dell; j++)
+  int rid;
+  double val;
+  SparseVector vec;
+
+  for(int j=0; j < d * ell; j++)
     (*product)[j] = 0;
   
   for(int i = 0; i < self-> nextRow; i++){
-    memset(temp, 0, sizeof(double) * ell);
+    for(int j=0; j<ell; j++)
+      temp[j] = 0;
     vec = self-> vectors[i];
-    
-    /* A*G for one row of A */    
-    /*
-    for (int t=0; t<ell ; t++)
-      for(int j=0; j < vec.nnz; j++)
-        temp[t] += vec.values[j] * (*G)[vec.cols[j]*ell + t];
-    */
 
-    
     for(int j=0; j < vec.nnz; j++){
-      val = vec.values[j];
       rid = vec.cols[j] * ell;
-      memcpy(g, &((*G)[rid]), sizeof(double) * ell); 
-      for (int t=0; t<ell; t++){
-	temp[t] += val * g[t];
-      }      
+      val = vec.values[j];
+
+      for (int t=0; t<ell ; t++)
+	temp[t] += (*G)[rid + t] * val;
     }
-
-
-    /* At*temp for corresponding column of At */
+    
     for(int j=0; j < vec.nnz; j++){
       rid = vec.cols[j] * ell;
       val = vec.values[j];
@@ -76,7 +66,7 @@ void covMultiply_sparseMatrix (SparseMatrix* self, int d, int ell, double** G, d
   double* G_addr = *G;
   *G = *product;
   *product = G_addr;
-  free(g);
+
 }
 
 
@@ -84,24 +74,28 @@ void covMultiply_sparseMatrix (SparseMatrix* self, int d, int ell, double** G, d
  * output is stored in double* product
  */
 void leftMult (SparseMatrix* self, int ell, double* G, double* product){
-  memset(product, 0, sizeof(double) * (self->nextRow) * ell);
+  int itr = (self->nextRow) * ell;
   SparseVector vec;
-  int rid;
-  double* g = (double*) malloc(sizeof(double) * ell);
+  int rid, gidx;
   double val;
+
+  for(int i=0; i < itr; i++)
+    product[i] = 0;
 
   for(int i=0; i < self-> nextRow; i++){
     vec = self-> vectors[i];
     rid = i * ell;
-    for (int t=0; t<vec.nnz ; t++){
-      memcpy(g, &(G[vec.cols[t]*ell]), sizeof(double) * ell);  // works?
+
+    for (int t=0; t < vec.nnz ; t++){
       val = vec.values[t];
+      gidx = vec.cols[t]*ell;
 
       for(int j=0; j < ell; j++){
-	product[rid + j] += val * g[j];
+	product[rid + j] += val * G[gidx + j];
       } 
     }
   }
+
 }
 
 
@@ -110,35 +104,36 @@ void leftMult (SparseMatrix* self, int ell, double* G, double* product){
  * output is returned in double* product
  */
 void transposeRightMult (SparseMatrix* self, int ell, double* G, double* product){
-
-  memset(product, 0, sizeof(double) * (self->dimension) * ell);
+  int itr = (self->dimension) * ell;
   SparseVector vec;
-  double* g = (double*) malloc(sizeof(double) * ell);
   int rid, col;
   double val;
+
+  for(int i=0; i<itr; i++)
+    product[i] = 0;
+
 
   for(int i=0; i < self-> nextRow; i++){
     vec = self-> vectors[i];
     rid = i*ell;
-    memcpy(g, &(G[rid]), sizeof(double) * ell);  // works?
 
     for(int j=0; j < vec.nnz; j++){
       val = vec.values[j];  
       col = vec.cols[j];
+
       for (int t=0; t<ell; t++){
-	product[t * (self->dimension) + col] += g[t] * val;
+	product[t * (self->dimension) + col] += G[rid + t] * val;
       }
     }
   }
-  free(g);
 }
 
 
 void blockPowerMethod(SparseMatrix *self, int ell, double epsilon, double* G, double* lsv, double* temp_vec, double* temp_mat){
   int iterations = (int) ceil(1 * (log(self->dimension / epsilon) / epsilon));
-  
+
   for(int i=0; i < iterations; i++){
-    if(i % 3 == 0)
+    if(i % 10 == 0)
       qrDecomp(G, self->dimension, ell);
     covMultiply_sparseMatrix(self, self->dimension, ell, &G, temp_vec, &temp_mat); 
   }
@@ -157,51 +152,80 @@ double* getCovariance_sparseMatrix(SparseMatrix* self){
   double* cov = (double*) malloc(sizeof(double) * self->dimension * self-> dimension);
   memset(cov, 0 , self->dimension * self-> dimension * sizeof(double));
 
+  
   int elemIndex;
   double val;
-  SparseVector temp;
+  SparseVector vec;
 
-  for(int t=0; t < self->nextRow; t++)
-    temp = self->vectors[t];
-    for(int i=0; i< temp.nnz; i++)
-      for(int j=0; j< temp.nnz; j++){
-	elemIndex = temp.cols[i] * self-> dimension + temp.cols[j];
-	val = (temp.values[i]) * (temp.values[j]);
+  for(int t=0; t < self->nextRow; t++){
+    vec = self->vectors[t];
+    for(int i=0; i< vec.nnz; i++){
+      for(int j=0; j< vec.nnz; j++){
+	elemIndex = vec.cols[i] * self-> dimension + vec.cols[j];
+	val = (vec.values[i]) * (vec.values[j]);
 	cov[elemIndex] += val;
       }
-
+    }
+  }
+  
   return cov;
 }
 
 void densify_sparseMatrix(SparseMatrix* self, double* output){
 
-  memset(output, 0, sizeof(double) * self->nextRow * self->dimension);
-  SparseVector temp;
+  int rid;
+  SparseVector vec;
+
+  int itr = self->nextRow * self->dimension;
+  for(int i=0; i<itr; i++)
+    output[i] = 0;
+
   
   for(int t=0; t < self->nextRow; t++){
-    temp = self->vectors[t];
-    for(int i=0; i < temp.nnz; i++)
-      output[ t * self->dimension + temp.cols[i] ] = temp.values[i];
+    vec = self->vectors[t];
+    rid = t * self->dimension;
+
+    for(int i=0; i < vec.nnz; i++)
+      output[ rid + vec.cols[i] ] = vec.values[i];
   }
 }
-
 
 
 double computeCovErr(SparseMatrix* A, double* B, int ell, int d){
   double* AtA = getCovariance_sparseMatrix(A);
   double* BtB = getDenseCovariance(B, ell, d);
-  subtract(AtA, BtB, AtA);
-  double s = getSpectralNorm(AtA, d, d);
-  return s;
+  subtract(AtA, BtB, d, d);
+  return getSpectralNorm(AtA, d, d);
 }
 
 double computeRelCovErr(SparseMatrix* A, double* B, int ell, int d){
   double s = computeCovErr(A,B,ell,d);
   return s / A-> squaredFrob;
+
+}
+
+double topRank_cov(double* AtA, int d, int k){
+  
+  double* S = (double*) malloc(sizeof(double) * d);
+  double* U = (double*) malloc(sizeof(double) * d * d);
+  double* Vt = (double*) malloc(sizeof(double) * d * d);
+  
+  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'N', d, d, AtA, d, S, U, d, Vt, d);
+
+  free(U); free(Vt);
+  double tailSquaredFrob = 0;
+
+  for(int i = k; i < d ; i++)
+    tailSquaredFrob += S[i];
+
+  free(S);
+  return tailSquaredFrob;
+
 }
 
 
-double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k){
+/* computes top rank k of A, returns it in Vt, returns tail norm of A too */
+double topRank(SparseMatrix* A, int k){
 
   double* Adense = (double*) malloc(sizeof(double) * A->nextRow * A->dimension);
   densify_sparseMatrix(A, Adense);
@@ -210,33 +234,56 @@ double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k){
   double* U = (double*) malloc(sizeof(double) * A->nextRow * A->nextRow);
   double* Vt = (double*) malloc(sizeof(double) * A->dimension * A->dimension);
   
-  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', A->nextRow, A->dimension, Adense, A->dimension, S, U, A->nextRow, Vt, A->dimension);
+  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'N', A->nextRow, A->dimension, Adense, A->dimension, S, U, A->nextRow, Vt, A->dimension);
 
-  free(U); free(Adense);
+  free(U); free(Adense); free(Vt);
+  int itr = min(A->nextRow, A->dimension);
   double tailSquaredFrob = 0;
-  
-  int itr = min(A->nextRow,A->dimension);
+
   for(int i = k; i < itr ; i++)
     tailSquaredFrob += pow(S[i],2);
+  
   free(S);
+  return tailSquaredFrob;
+}
+
+
+double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k, double tailSquaredFrob){
+ 
 
   double projNorm = 0, projErr = 0;
-  double* projVec = (double*) malloc(sizeof(double) * k);
+  double projVec[k];
   SparseVector vec;
+  int rid;
+
+
+  double* S = (double*) malloc(sizeof(double) * 2 * ell);
+  double* U = (double*) malloc(sizeof(double) * 4 * ell * ell);
+  double* Vt = (double*) malloc(sizeof(double) * d * d);
+
+  int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'A', 2*ell, d, B, d, S, U, 2*ell, Vt, d);
+ 
 
   for(int t=0; t< A->nextRow; t++){
     vec = A->vectors[t];
     projNorm = 0;
-    memset(projVec, 0, sizeof(double) * k);
+
     for(int i=0; i<k; i++){
-      for(int j=0; j<vec.nnz; j++){
-	projVec[i] += vec.values[j] * Vt[i*A->dimension + vec.cols[j]];
-      }
+      projVec[i] = dotproduct(&vec, Vt, i, d);
       projNorm += pow(projVec[i],2);
     }
-    projErr += vec.squaredNorm - projNorm;
+
+    projErr += (vec.squaredNorm - projNorm);
   }
 
-  free(Vt);
   return projErr / tailSquaredFrob;
+}
+
+
+double dotproduct(SparseVector* sv, double* Vt, int rid, int dim){
+  double dp = 0;
+  for(int i=0; i < sv->nnz; i++ )
+    dp += sv->values[i] * Vt[rid*dim + sv->cols[i]];
+
+  return dp;
 }

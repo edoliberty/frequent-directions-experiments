@@ -13,8 +13,8 @@ void init_randomSum(RandomSum* self, int ell, int dim ){
 void append_to_randomSum(RandomSum* self, SparseVector* sv){
   int rid = rand() % (self->ell);
   int sign = (-2) * (rand() % 2) + 1;
-  int i, index;
-  for(i=0; i<sv->nnz; i++){
+  int index;
+  for(int i=0; i<sv->nnz; i++){
     index = rid * self->dimension + sv->cols[i];
     self->sketch[index] += sign * (sv->values[i]);
   }

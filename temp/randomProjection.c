@@ -11,11 +11,11 @@ void init_randomProj(RandomProjection* self, int ell, int dim ){
 
 
 void append_to_randomProj(RandomProjection* self, SparseVector* sv){
-  int sign, i, j, index;
+  int sign, index;
 
-  for(i=0; i < self->ell; i++){
+  for(int i=0; i < self->ell; i++){
     sign = (-2) * (rand() % 2) + 1;
-    for(j=0; j < sv->nnz; j++){
+    for(int j=0; j < sv->nnz; j++){
       index = i * self->dimension + sv->cols[j];
       self->sketch[index] += (sign/sqrt(self->ell)) * (sv->values[j]);
     }

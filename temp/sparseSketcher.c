@@ -6,9 +6,12 @@ void init_sparseSketcher(SparseSketcher* self, int ell, int dim ){
   self->ell = ell;
   self->m = 2*ell;
   self->sketch = (double*) malloc(sizeof(double) * (self->m) * dim);
-  memset(self->sketch, 0, sizeof(double) * (self->m) * dim);
   init_sparseMatrix(&(self->buffer), dim, dim);
   self->nnz_threshold = ell * dim;
+
+  for(int i=0; i < ell*dim; i++)
+    self->sketch[i] = 0;
+
 }  
 
 
@@ -23,8 +26,10 @@ void rotate_sparseSketcher(SparseSketcher *self){
   denseShrink(self);
 }
 
+
 void get_sparseSketch(SparseSketcher *self){
-  rotate_sparseSketcher(self);
+  sparseShrink(self);
+  //rotate_sparseSketcher(self);
 }
 
 void sparseShrink(SparseSketcher *self){
@@ -46,11 +51,9 @@ void sparseShrink(SparseSketcher *self){
     free(Z);
 
     // svd(ZtA)
-    double S[self->ell], U[(self->ell) * (self->ell)], Vt[self->dimension * (self->ell)];
-  
-    //double* S = (double*) malloc(sizeof(double) * self->ell);
-    //double* U = (double*) malloc(sizeof(double) * self->ell * self->ell);
-    //double* Vt = (double*) malloc(sizeof(double) * self->dimension * self->ell);
+    double* S = (double*) malloc(sizeof(double) * self->ell);
+    double* U = (double*) malloc(sizeof(double) * self->ell * self->ell);
+    double* Vt = (double*) malloc(sizeof(double) * self->dimension * self->ell);
 
     int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', self->ell, self->dimension, temp_mat, self->dimension, S, U, self->ell, Vt, self->dimension);
     free(temp_mat);
@@ -63,10 +66,10 @@ void sparseShrink(SparseSketcher *self){
 	self->sketch[(self->ell + i) * self->dimension + j] = Vt[i * self->dimension + j] * S[i] ;
     }
   }else{ // self->buffer has atmost ell rows
+    
     SparseVector temp;
-    int itr = (self->buffer).nextRow;
 
-    for(int i=0; i < itr; i++){
+    for(int i=0; i < (self->buffer).nextRow; i++){
       temp = (self->buffer).vectors[i];
       for(int j=0; j < temp.nnz; j++)
 	self->sketch[(self->ell + i) * self->dimension + temp.cols[j]] = temp.values[j];
@@ -81,11 +84,9 @@ void sparseShrink(SparseSketcher *self){
 
 
 void denseShrink(SparseSketcher* self){
-  double S[2*self->ell], U[(2*self->ell) * (2*self->ell)], Vt[self->dimension * (2*self->ell)];
-
-  //double* S = (double*) malloc(sizeof(double) * 2 * self->ell);
-  //double* U = (double*) malloc(sizeof(double) * 4 * self->ell * self->ell);
-  //double* Vt = (double*) malloc(sizeof(double) * 2 * self->dimension * self->ell);
+  double* S = (double*) malloc(sizeof(double) * 2 * self->ell);
+  double* U = (double*) malloc(sizeof(double) * 4 * self->ell * self->ell);
+  double* Vt = (double*) malloc(sizeof(double) * 2 * self->dimension * self->ell);
 
   int info = LAPACKE_dgesdd(LAPACK_ROW_MAJOR, 'S', 2*self->ell, self->dimension, self->sketch, self->dimension, S, U, 2*self->ell, Vt, self->dimension);
 
@@ -95,6 +96,5 @@ void denseShrink(SparseSketcher* self){
       self->sketch[i * self->dimension + j] = Vt[i * self->dimension + j] * S[i] ;
   }
 
-  //free(S); free(U); free(Vt);
   memset(&self->sketch[self->ell * self->dimension], 0, self->ell * self->dimension * sizeof(double));
 }

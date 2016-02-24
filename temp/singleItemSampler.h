@@ -9,7 +9,6 @@
 #include "sparseVector.h"
 #include "common.h"
 
-//#define max(a,b) (a>b?a:b)
 
 typedef struct {
   SparseVector* item;

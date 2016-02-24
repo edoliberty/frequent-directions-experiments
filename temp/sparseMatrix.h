@@ -8,7 +8,6 @@
 #include <string.h>
 #include <time.h>
 #include <stdint.h>
-
 #include "sparseVector.h"
 #include "common.h"
 
@@ -22,6 +21,8 @@ typedef struct {
 } SparseMatrix;
 
 
+double topRank_cov(double* AtA, int d, int k);
+
 void init_sparseMatrix (SparseMatrix* self, int dim, int len);
 void append_to_sparseMatrix (SparseMatrix *self, SparseVector *sv);
 void print_sparseMatrix(SparseMatrix* self);
@@ -33,6 +34,8 @@ double* getCovariance_sparseMatrix(SparseMatrix *self);
 void densify_sparseMatrix(SparseMatrix* self, double* output);
 double computeCovErr(SparseMatrix* A, double* B, int ell, int d);
 double computeRelCovErr(SparseMatrix* A, double* B, int ell, int d);
-double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k);
+double topRank(SparseMatrix* A, int k);
+double computeRelProjErr(SparseMatrix* A, double* B, int ell, int d, int k, double tailSquaredFrob);
+double dotproduct(SparseVector* sv, double* Vt, int rid, int dim);
 
 #endif

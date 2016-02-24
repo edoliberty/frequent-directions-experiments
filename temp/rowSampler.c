@@ -13,19 +13,18 @@ void append_to_rowSampler(RowSampler* self, SparseVector* sv){
   int i;
   for(i=0; i < self-> ell; i++)
     add_itemSampler(&(self-> samplers[i]), sv);
-
 }
 
 
 void get_rowSamplerSketch(RowSampler* self){
-  int i, j;
+
   SparseVector* item;
   double item_prob;
 
-  for(i=0; i < self-> ell; i++){
+  for(int i=0; i < self-> ell; i++){
     item = (self-> samplers[i]).item;
     item_prob = (self-> samplers[i]).item_probability;
-    for(j=0; j< item-> nnz; j++)
+    for(int j=0; j< item-> nnz; j++)
       self-> sketch[i * self-> dimension + item-> cols[j]] = (item-> values[j]) / sqrt(item_prob * self-> ell);
   }
 }
