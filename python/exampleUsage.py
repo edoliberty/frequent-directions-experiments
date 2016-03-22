@@ -21,9 +21,14 @@ for i in xrange(n):
     sketcher.append(row)
 sketch = sketcher.get()
 
+# Here is where you do something with the sketch.
+# The sketch is an ell by d matrix 
+# For example, you can compute an approximate covariance of the input 
+# matrix like this:
+
 approxCovarianceMatrix = dot(sketch.transpose(),sketch)
 
-print approxCovarianceMatrix.shape 
+ 
 
 
 
