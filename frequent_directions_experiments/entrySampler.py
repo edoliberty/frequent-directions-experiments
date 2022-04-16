@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 from scipy.sparse import dok_matrix
 from scipy import dot, diag, sqrt, float32
 from scipy.sparse.linalg import svds
 
-from utils.reservoirSampler import ReservoirSampler
+from .utils.reservoirSampler import ReservoirSampler
 
 class EntrySampler:
     def __init__(self, d, ell):

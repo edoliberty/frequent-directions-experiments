@@ -1,10 +1,12 @@
+from __future__ import absolute_import
 from numpy import zeros, sqrt, dot, diag, ceil, log
 from numpy.random import randn
 from numpy.linalg import norm, svd, qr, eigh
 from scipy.sparse import lil_matrix as sparse_matrix
 from scipy.sparse import csc_matrix, rand
 
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
+from six.moves import range
 
 
 # simultaneous iterations algorithm
@@ -17,7 +19,7 @@ def simIter(matrix, ell):
     matrix = csc_matrix(matrix)
     matrix_trans = matrix.transpose()
 
-    for i in xrange(num_of_iter):
+    for i in range(num_of_iter):
         init_vectors = matrix.dot((matrix_trans).dot(init_vectors))
 
     [Q,_] = qr((matrix_trans).dot(init_vectors))

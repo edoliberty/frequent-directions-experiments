@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 from numpy import zeros, max, sqrt, isnan, isinf, dot, diag, count_nonzero
 from numpy.linalg import svd, linalg
 from scipy.linalg import svd as scipy_svd
 from scipy.sparse.linalg import svds as scipy_svds
 
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
 
 
 class FrequentDirections(MatrixSketcherBase):

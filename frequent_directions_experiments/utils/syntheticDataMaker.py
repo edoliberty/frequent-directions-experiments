@@ -1,7 +1,9 @@
+from __future__ import absolute_import
 import sys
 from numpy.random import randn
 from numpy.linalg import qr
 import numpy
+from six.moves import range
         
 class SyntheticDataMaker:
 
@@ -28,9 +30,9 @@ class SyntheticDataMaker:
         # setting the singular values  
         eta = self.signal_singular_value_decay_factor
         if self.signal_singular_value_decay_type == 'exp':
-            self.signal_singular_values = [numpy.exp(-10*eta*i/self.signal_dimension) for i in xrange(self.signal_dimension)] 
+            self.signal_singular_values = [numpy.exp(-10*eta*i/self.signal_dimension) for i in range(self.signal_dimension)] 
         elif self.signal_singular_value_decay_type == 'lin':
-            self.signal_singular_values = [max(1.0 - eta*float(i)/self.signal_dimension,0.0) for i in xrange(self.signal_dimension)]
+            self.signal_singular_values = [max(1.0 - eta*float(i)/self.signal_dimension,0.0) for i in range(self.signal_dimension)]
         else:
             self.signal_singular_values = numpy.ones(self.signal_dimension)
         # done initializing 
@@ -48,7 +50,7 @@ class SyntheticDataMaker:
 
     def makeMatrix(self, n):
         matrix = numpy.zeros((n, self.dimension))
-        for i in xrange(n):
+        for i in range(n):
             matrix[i,:] = self.makeRow()
         return matrix
             

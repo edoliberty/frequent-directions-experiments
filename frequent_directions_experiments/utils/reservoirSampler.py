@@ -1,10 +1,14 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from numpy.random import binomial
 from random import sample
+from six.moves import range
+from six.moves import zip
 
 class ReservoirSampler():
     def __init__(self,t_paralel_sampleres=1):
         self.t = t_paralel_sampleres
-        self.t_range = range(self.t)
+        self.t_range = list(range(self.t))
         self.items = [None]*self.t
         self.items_weights = [0.0]*self.t
 
@@ -31,19 +35,19 @@ class ReservoirSampler():
     def get(self, with_probabilities = False):
         if with_probabilities:
             probs = [w/self.sum_w for w in self.items_weights]
-            return zip(self.items,probs)
+            return list(zip(self.items,probs))
         else:
             return self.items
 
 
 if __name__ == "__main__":
     n = 1000
-    items = range(n)
-    weights = range(n)
+    items = list(range(n))
+    weights = list(range(n))
     
     rs = ReservoirSampler(1000)
 
-    for i in xrange(n):
+    for i in range(n):
         rs.add(items[i],weights[i])
 
-    print sorted(rs.get())
+    print(sorted(rs.get()))

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from numpy.linalg import svd
 from numpy import dot
 from numpy import diagflat 

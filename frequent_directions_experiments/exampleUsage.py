@@ -1,9 +1,11 @@
+from __future__ import absolute_import
 import sys
 from numpy.linalg import norm
 from numpy import dot
 
-from utils.syntheticDataMaker import SyntheticDataMaker
-from frequentDirections import FrequentDirections
+from .utils.syntheticDataMaker import SyntheticDataMaker
+from .frequentDirections import FrequentDirections
+from six.moves import range
 
 n = 500
 d = 100
@@ -16,7 +18,7 @@ dataMaker.initBeforeMake(d, k, signal_to_noise_ratio=10.0)
 
 # This is where the sketching actually happens
 sketcher = FrequentDirections(d,ell)
-for i in xrange(n):
+for i in range(n):
     row = dataMaker.makeRow()
     sketcher.append(row)
 sketch = sketcher.get()

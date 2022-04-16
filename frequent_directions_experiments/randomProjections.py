@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 from numpy import outer, sqrt
 from numpy.random import choice
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
 
 class RandomProjections(MatrixSketcherBase):
 

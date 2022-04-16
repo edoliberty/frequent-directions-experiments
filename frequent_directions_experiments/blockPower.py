@@ -1,14 +1,17 @@
 #import numpy, scipy
+from __future__ import absolute_import
+from __future__ import print_function
 from numpy.random import randn
 from numpy import ceil, log, zeros
 from numpy.linalg import qr, svd
+from six.moves import range
 
 def blockpower(sparseMat, ell, eps=1):
     n , d = sparseMat.getShape()
     init_mat = randn(d, ell)
     num_of_iter = int(10 * ceil(log(n/eps)/eps)) #constant 10 should be found experimentally based on eps
 
-    for i in xrange (num_of_iter):
+    for i in range (num_of_iter):
         init_mat = sparseMat.covarianceMult(init_mat)
         #K = mat.dot(init_mat)
         #init_mat = (mat.transpose()).dot(K)
@@ -32,11 +35,11 @@ if __name__ == '__main__':
     
     Vnew = numpy.dot(numpy.transpose(A),numpy.dot(A,V))
     
-    for j in xrange(20):
+    for j in range(20):
         z = numpy.linalg.norm(Vnew[:,j])
         Vnew[:,j] = Vnew[:,j]/z
    
-    print numpy.linalg.norm(Vnew - V)**2    
+    print(numpy.linalg.norm(Vnew - V)**2)    
 
     
     

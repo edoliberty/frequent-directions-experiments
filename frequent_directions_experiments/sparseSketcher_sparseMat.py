@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from numpy import zeros, sqrt, dot, diag, ceil, log
 from numpy.random import randn
 from numpy import cov as covariance
@@ -6,13 +8,14 @@ from scipy.sparse import lil_matrix, csc_matrix, csr_matrix, dok_matrix, rand
 from time import time as timer
 import pickle
 
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
 from .utils.common import truncateSVD
-from blockPower import blockpower
-from sparseVector import SparseVector
-from frequentDirections import FrequentDirections as FD
+from .blockPower import blockpower
+from .sparseVector import SparseVector
+from .frequentDirections import FrequentDirections as FD
 
-from sparseMatrix import SparseMatrix
+from .sparseMatrix import SparseMatrix
+from six.moves import range
 
 # sparse frequent directions sketcher
 class SparseSketcher(MatrixSketcherBase):
@@ -76,7 +79,7 @@ if __name__ == '__main__':
     n = 1000
     d = 400
     k = 5
-    ells = range(10,21,10)
+    ells = list(range(10,21,10))
     density = 0.1
     A = rand(n, d, density, format = 'lil')   
     
@@ -110,7 +113,7 @@ if __name__ == '__main__':
         proj_err = norm(B - projection, 'fro') ** 2 
         relative_proj_err = float(proj_err) / float(opt_rank_k_err)
 
-        print 'sparse: ell=',ell, 'time=',totalSketchTime, 'cov-err=',relative_cov_err, 'proj-err=',relative_proj_err
+        print('sparse: ell=',ell, 'time=',totalSketchTime, 'cov-err=',relative_cov_err, 'proj-err=',relative_proj_err)
 
         ############### FD ###################################3
         sketcher = FD(d, ell)
@@ -132,4 +135,4 @@ if __name__ == '__main__':
         proj_err = norm(B - projection, 'fro') ** 2 
         relative_proj_err = float(proj_err) / float(opt_rank_k_err)
 
-        print 'DenseFD: ell=',ell, 'time=',totalSketchTime, 'cov-err=',relative_cov_err, 'proj-err=',relative_proj_err
+        print('DenseFD: ell=',ell, 'time=',totalSketchTime, 'cov-err=',relative_cov_err, 'proj-err=',relative_proj_err)

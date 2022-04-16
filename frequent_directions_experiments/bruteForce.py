@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 from numpy import zeros, dot, outer, diag, sqrt
 from numpy.linalg import svd
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
 
 class BruteForce(MatrixSketcherBase):
     def __init__(self, d, ell):

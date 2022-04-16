@@ -1,12 +1,14 @@
+from __future__ import absolute_import
 import sys
 from numpy import array, sum, float32, uint32, zeros
+from six.moves import range
 
 
 class SparseVector:
 
     def __init__(self, d, kvList):
         self.d = d
-        kvList = filter(lambda kv: kv[0] >= 0 and kv[0] < self.d, kvList)
+        kvList = [kv for kv in kvList if kv[0] >= 0 and kv[0] < self.d]
         kvList.sort()
         self.cols = array([kv[0] for kv in kvList], dtype=uint32)
         self.values = array([kv[1] for kv in kvList], dtype=float32)

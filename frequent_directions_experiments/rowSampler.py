@@ -1,17 +1,19 @@
+from __future__ import absolute_import
 import numpy
 from numpy.linalg import norm
 from random import random
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
+from six.moves import range
 
 class RowSampler(MatrixSketcherBase):
     def __init__(self, d, ell):
         MatrixSketcherBase.__init__(self, d, ell)
         self.class_name = 'RowSampler' 
-        self.samplers = [singleItemSampler() for i in xrange(self.ell)]
+        self.samplers = [singleItemSampler() for i in range(self.ell)]
                        
     def append(self,vector):
         row_norm_square = norm(vector) ** 2
-        for i in xrange(self.ell):
+        for i in range(self.ell):
             self.samplers[i].add(vector, row_norm_square)
    
     def get(self):

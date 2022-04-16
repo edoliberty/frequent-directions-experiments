@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from numpy.random import randint, choice
-from matrixSketcherBase import MatrixSketcherBase
+from .matrixSketcherBase import MatrixSketcherBase
 
 
 class RandomSums(MatrixSketcherBase):

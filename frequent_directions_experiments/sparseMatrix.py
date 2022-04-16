@@ -1,11 +1,14 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 from numpy import ceil, log, array, sum, float32, uint32, zeros, empty, arange, concatenate, sqrt,diag
-from sparseVector import SparseVector
+from .sparseVector import SparseVector
 from scipy.sparse import rand
 from numpy.random import randn
 from .utils.common import *
 from time import time as timer
 from numpy.linalg import qr
+from six.moves import range
 
 class SparseMatrix:
     
@@ -20,7 +23,7 @@ class SparseMatrix:
 
     def append(self, vector):
         if(vector.d != self.dimension):
-            print "dimension mismatch: can not append this vector to the matrix"
+            print("dimension mismatch: can not append this vector to the matrix")
             return
 
         # extend arrays
@@ -86,7 +89,7 @@ class SparseMatrix:
         init_mat = randn(d, ell)
         num_of_iter = int(10 * ceil(log(d/eps)/eps)) 
 
-        for i in xrange (num_of_iter):
+        for i in range (num_of_iter):
             [init_mat,_] = qr(init_mat)
             init_mat = self.covarianceMult(init_mat)
     
@@ -192,7 +195,7 @@ if __name__ == '__main__':
     s = timer()  
     B = sparseMat.sparseShrink(ell)
     e = timer()
-    print 'elapsed time in python is ',e-s
+    print('elapsed time in python is ',e-s)
 
-    print B
+    print(B)
     
