@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 from scipy.sparse import dok_matrix
-from scipy import dot, diag, sqrt, float32
+from scipy import float32
 from scipy.sparse.linalg import svds
+from numpy import dot, diag, sqrt
 
 from .utils.reservoirSampler import ReservoirSampler
 
