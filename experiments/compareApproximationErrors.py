@@ -54,6 +54,6 @@ if __name__ == '__main__':
             opt_rank_k_err = norm(A - A_rank_k, 'fro') ** 2
             relative_proj_err = float(proj_err) / float(opt_rank_k_err)
 
-            print sketcher.class_name, relative_cov_err, relative_proj_err
+            print(sketcher.class_name, relative_cov_err, relative_proj_err)
              
 

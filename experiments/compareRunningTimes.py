@@ -35,4 +35,4 @@ if __name__ == '__main__':
             t_end = timer()
                         
             totalSketchTime = t_end-t_start
-            print sketcher.class_name, totalSketchTime 
+            print(sketcher.class_name, totalSketchTime)
