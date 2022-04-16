@@ -7,11 +7,10 @@ from time import time as timer
 import pickle
 
 from matrixSketcherBase import MatrixSketcherBase
-from common import truncateSVD
+from .utils.common import truncateSVD
 from blockPower import blockpower
 from sparseVector import SparseVector
 from frequentDirections import FrequentDirections as FD
-from bufferFrequentDirections import BufferFrequentDirections as BFD
 
 from sparseMatrix import SparseMatrix
 
@@ -134,27 +133,3 @@ if __name__ == '__main__':
         relative_proj_err = float(proj_err) / float(opt_rank_k_err)
 
         print 'DenseFD: ell=',ell, 'time=',totalSketchTime, 'cov-err=',relative_cov_err, 'proj-err=',relative_proj_err
-
-        ############### BFD ###################################3
-        sketcher = BFD(d, ell)
-        t_start = timer()
-        for sv in A:
-            sketcher.append(sv)
-        t_end = timer()
-        totalSketchTime = t_end-t_start
-        
-        sketch = sketcher.get()
-        #### cov-error #######
-        diff = ATA - dot(sketch.transpose(),sketch)
-        relative_cov_err = float(norm(diff,2)) / float(squared_frob_A)
-
-        #### proj-error ######
-        [u,s,vt] = svd(sketch, full_matrices = False)
-        vt = vt[:k, :] 
-        projection = dot(B, dot(vt.transpose(), vt))
-        proj_err = norm(B - projection, 'fro') ** 2 
-        relative_proj_err = float(proj_err) / float(opt_rank_k_err)
-
-        print 'BufferFD: ell=',ell, 'time=',totalSketchTime, 'cov-err=',relative_cov_err, 'proj-err=',relative_proj_err
-
-        print '##################################################'

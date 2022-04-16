@@ -3,7 +3,7 @@ from numpy import ceil, log, array, sum, float32, uint32, zeros, empty, arange, 
 from sparseVector import SparseVector
 from scipy.sparse import rand
 from numpy.random import randn
-from common import *
+from .utils.common import *
 from time import time as timer
 from numpy.linalg import qr
 
