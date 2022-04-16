@@ -11,6 +11,8 @@ from . import sparseMatrix
 from . import sparseSketcher_sparseMat
 from . import sparseSketcher
 from . import sparseVector
+from .utils import syntheticDataMaker
+from .utils import common
 
 __all__ = [
     "blockPower",
@@ -26,4 +28,6 @@ __all__ = [
     "sparseSketcher_sparseMat",
     "sparseSketcher",
     "sparseVector",
+    "syntheticDataMaker",
+    "common",
 ]
