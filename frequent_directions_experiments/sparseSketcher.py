@@ -6,7 +6,6 @@ from scipy.sparse import lil_matrix as sparse_matrix
 from scipy.sparse import csc_matrix, rand
 
 from .matrixSketcherBase import MatrixSketcherBase
-from six.moves import range
 
 
 # simultaneous iterations algorithm

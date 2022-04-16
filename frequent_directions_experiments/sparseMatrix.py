@@ -8,7 +8,6 @@ from numpy.random import randn
 from .utils.common import *
 from time import time as timer
 from numpy.linalg import qr
-from six.moves import range
 
 class SparseMatrix:
     

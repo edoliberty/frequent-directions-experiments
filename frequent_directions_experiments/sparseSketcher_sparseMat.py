@@ -15,7 +15,6 @@ from .sparseVector import SparseVector
 from .frequentDirections import FrequentDirections as FD
 
 from .sparseMatrix import SparseMatrix
-from six.moves import range
 
 # sparse frequent directions sketcher
 class SparseSketcher(MatrixSketcherBase):

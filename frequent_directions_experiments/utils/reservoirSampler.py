@@ -2,8 +2,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 from numpy.random import binomial
 from random import sample
-from six.moves import range
-from six.moves import zip
 
 class ReservoirSampler():
     def __init__(self,t_paralel_sampleres=1):

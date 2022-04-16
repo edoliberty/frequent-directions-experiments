@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 import sys
 from numpy import array, sum, float32, uint32, zeros
-from six.moves import range
 
 
 class SparseVector:

@@ -3,7 +3,6 @@ import numpy
 from numpy.linalg import norm
 from random import random
 from .matrixSketcherBase import MatrixSketcherBase
-from six.moves import range
 
 class RowSampler(MatrixSketcherBase):
     def __init__(self, d, ell):

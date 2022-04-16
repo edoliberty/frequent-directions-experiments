@@ -4,7 +4,6 @@ from __future__ import print_function
 from numpy.random import randn
 from numpy import ceil, log, zeros
 from numpy.linalg import qr, svd
-from six.moves import range
 
 def blockpower(sparseMat, ell, eps=1):
     n , d = sparseMat.getShape()

@@ -5,7 +5,6 @@ from numpy import dot
 
 from .utils.syntheticDataMaker import SyntheticDataMaker
 from .frequentDirections import FrequentDirections
-from six.moves import range
 
 n = 500
 d = 100

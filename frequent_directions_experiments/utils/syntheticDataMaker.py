@@ -3,7 +3,6 @@ import sys
 from numpy.random import randn
 from numpy.linalg import qr
 import numpy
-from six.moves import range
         
 class SyntheticDataMaker:
 
