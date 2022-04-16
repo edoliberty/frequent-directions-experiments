@@ -1,6 +1,5 @@
 import unittest
-from ..sketch.utils.syntheticDataMaker import SyntheticDataMaker
-from ..sketch.entrySampler import EntrySampler as Sketcher
+import frequent_directions_experiments as fde
 
 class testEntrySampler(unittest.TestCase):
 
@@ -8,11 +7,11 @@ class testEntrySampler(unittest.TestCase):
     n = 100
     d = 20
     ell = 5
-    syntheticDataMaker = SyntheticDataMaker()
+    syntheticDataMaker = fde.utils.syntheticDataMaker.SyntheticDataMaker()
     syntheticDataMaker.initBeforeMake(d,signal_dimension=10,signal_to_noise_ratio=5,\
                                     signal_singular_value_decay_factor=1,signal_singular_value_decay_type='lin')
     
-    sketcher = Sketcher(d,ell)
+    sketcher = fde.entrySampler.EntrySampler(d,ell)
 
     for i in xrange(n):
         v = syntheticDataMaker.makeRow()
