@@ -18,7 +18,7 @@ class testRowSampler(unittest.TestCase):
 
         sketcher = fde.rowSampler.RowSampler(d, ell)
 
-        for i in xrange(n):
+        for i in range(n):
             v = syntheticDataMaker.makeRow()
             sketcher.append(v)
 

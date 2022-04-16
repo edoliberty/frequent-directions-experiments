@@ -18,7 +18,7 @@ class testRandomSums(unittest.TestCase):
 
         sketcher = fde.randomSums.RandomSums(d, ell)
 
-        for i in xrange(n):
+        for i in range(n):
             v = syntheticDataMaker.makeRow()
             sketcher.append(v)
 

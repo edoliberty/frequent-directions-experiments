@@ -18,7 +18,7 @@ class testFrequentDirections(unittest.TestCase):
 
         sketcher = fde.frequentDirections.FrequentDirections(d, ell)
 
-        for i in xrange(n):
+        for i in range(n):
             v = syntheticDataMaker.makeRow()
             sketcher.append(v)
         sketch = sketcher.get()

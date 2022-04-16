@@ -18,7 +18,7 @@ class testEntrySampler(unittest.TestCase):
 
         sketcher = fde.entrySampler.EntrySampler(d, ell)
 
-        for i in xrange(n):
+        for i in range(n):
             v = syntheticDataMaker.makeRow()
             sketcher.append(v)
         sketch = sketcher.get()

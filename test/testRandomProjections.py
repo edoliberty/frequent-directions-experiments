@@ -18,7 +18,7 @@ class testRandomProjection(unittest.TestCase):
 
         sketcher = fde.randomProjections.RandomProjections(d, ell)
 
-        for i in xrange(n):
+        for i in range(n):
             v = syntheticDataMaker.makeRow()
             sketcher.append(v)
 

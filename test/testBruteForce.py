@@ -18,7 +18,7 @@ class testBruteForce(unittest.TestCase):
 
         sketcher = fde.bruteForce.BruteForce(d, ell)
 
-        for i in xrange(n):
+        for i in range(n):
             v = syntheticDataMaker.makeRow()
             sketcher.append(v)
         sketch = sketcher.get()
